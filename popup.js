@@ -48,7 +48,10 @@ async function loadAccount() {
   const base = (local.cloudBaseUrl || BRAUO_CLOUD_API).replace(/\/$/, "");
   try {
     const response = await fetch(base + "/v1/account", {
-      headers: { Authorization: "Bearer " + key }
+      headers: {
+        Authorization: "Bearer " + key,
+        [BRAUO_CLIENT_HEADER]: BRAUO_CLIENT_NAME
+      }
     });
 
     if (response.status === 401) {
