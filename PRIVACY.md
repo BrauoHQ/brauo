@@ -12,6 +12,7 @@ Brauo sends only the text of blocks the user chooses to read and the selected vo
 Nothing is sent until the user starts reading or plays a voice preview; a preview sends only a fixed sample sentence, never page content.
 Page URLs are not sent.
 The API also receives the user's Brauo API key to authenticate the request.
+Each request carries a fixed label naming the extension, so Brauo can tell how much its own apps are used; the label is the same constant for every user and every page, and identifies the software rather than the person.
 
 ## Where your text goes
 

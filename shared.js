@@ -1,5 +1,10 @@
 // Brauo shared constants and helpers, loaded by the service worker, the content script, and the options page.
 const BRAUO_CLOUD_API = "https://api.brauo.com";
+// Names this client to the API so usage can be split by product. It is a
+// plain analytics label: the service treats it as a hint and never as
+// permission, and it carries nothing about the page or the user.
+const BRAUO_CLIENT_HEADER = "X-Brauo-Client";
+const BRAUO_CLIENT_NAME = "extension";
 const BRAUO_PREVIEW_SAMPLE = "This is how I sound.";
 const BRAUO_MAX_CHARS = 1800; // the service rejects requests near 2000 chars
 

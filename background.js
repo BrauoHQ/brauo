@@ -82,7 +82,8 @@ const BrauoCloudProvider = {
       method: "POST",
       headers: {
         "Authorization": "Bearer " + cfg.cloud.apiKey,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        [BRAUO_CLIENT_HEADER]: BRAUO_CLIENT_NAME
       },
       body: JSON.stringify({ text, voice, format: "mp3", cache: true })
     }, 3, BRAUO_SPEAK_TIMEOUT_MS);
