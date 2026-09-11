@@ -35,7 +35,8 @@ class ReleaseWorkflowTests(unittest.TestCase):
                               capture_output=True, text=True)
 
     def test_numeric_extension_tags_are_resolved(self):
-        for tag in ['v1', 'v1.2', 'v0.17.0', 'v1.2.3.4']:
+        for tag in ['v1', 'v1.2', 'v0.17.0', 'v1.2.3.4', 'v65535', 'v0.0.0.1',
+                    'v65535.65535.65535.65535', 'v0.1.0.0']:
             with self.subTest(tag=tag):
                 (self.work / 'output').unlink(missing_ok=True)
                 result = self.run_step('Resolve version from tag', GITHUB_REF_NAME=tag)
@@ -44,6 +45,10 @@ class ReleaseWorkflowTests(unittest.TestCase):
 
     def test_invalid_tags_fail_before_output(self):
         for tag in ['', 'v', 'v1.2.3.4.5', 'v1.2.3-rc.1', 'v../other',
+                    'v65536', 'v1.65536', 'v1.2.65536', 'v1.2.3.65536',
+                    'v01', 'v1.01', 'v1.2.03', 'v1.2.3.04', 'v00',
+                    'v0', 'v0.0', 'v0.0.0', 'v0.0.0.0',
+                    'v9999999999999999999999999999999999999',
                     'v1.2.3$(printf${IFS}injected)', 'v1.2.3`id`', 'v1.2.3";id;',
                     'v1.2.3\nversion=other', 'v1.2.3 trailing']:
             with self.subTest(tag=tag):
