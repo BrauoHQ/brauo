@@ -15,31 +15,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Resolve version from tag
         id: v
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+(\.[0-9]+){0,3}$ ]]; then
+            printf '%s\n' 'Release tag must be v followed by a numeric extension version.' >&2
+            exit 1
+          fi
+          printf 'version=%s\n' "${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Check manifest version matches tag
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
         run: |
           manifest="$(node -p "require('./manifest.json').version")"
-          if [ "$manifest" != "${{ steps.v.outputs.version }}" ]; then
-            echo "manifest version $manifest does not match tag ${{ steps.v.outputs.version }}" >&2
+          if [ "$manifest" != "$VERSION" ]; then
+            echo "manifest version $manifest does not match tag $VERSION" >&2
             exit 1
           fi
 
       - name: Build package
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
         run: |
-          zip -r -X "brauo-${{ steps.v.outputs.version }}.zip" \
+          zip -r -X "brauo-${VERSION}.zip" \
             manifest.json background.js content.js content.css \
             options.html options.js popup.html popup.js shared.js voices.js icons _locales
 
       - name: Generate checksum
-        run: sha256sum "brauo-${{ steps.v.outputs.version }}.zip" | tee "brauo-${{ steps.v.outputs.version }}.zip.sha256"
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: sha256sum "brauo-${VERSION}.zip" | tee "brauo-${VERSION}.zip.sha256"
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1
         with:
           subject-path: "brauo-${{ steps.v.outputs.version }}.zip"
 

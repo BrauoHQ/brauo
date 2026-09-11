@@ -1,0 +1,31 @@
+name: check-release
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - '.github/workflows/check-release.yml'
+      - 'scripts/test_release_workflow.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release.yml'
+      - '.github/workflows/check-release.yml'
+      - 'scripts/test_release_workflow.py'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Test release steps without publishing
+        run: |
+          python3 -m venv .release-tests
+          .release-tests/bin/pip install PyYAML==6.0.3
+          .release-tests/bin/python -m unittest discover -s scripts -p 'test_*.py' -v
